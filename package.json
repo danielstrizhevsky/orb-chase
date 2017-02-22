@@ -1,0 +1,23 @@
+{
+  "name": "orb-chase",
+  "version": "1.0.0",
+  "description": "trying out a multiplayer \".io\"-style game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danny45s/orb-chase.git"
+  },
+  "author": "Daniel Strizhevsky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danny45s/orb-chase/issues"
+  },
+  "homepage": "https://github.com/danny45s/orb-chase#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "socket.io": "^1.7.3"
+  }
+}
