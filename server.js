@@ -1,86 +1,88 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
+const express = require('express');
 
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/client/index.html');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+app.get('/', (req, res) => {
+  res.sendFile(`${__dirname}/client/index.html`);
 });
 
 app.use(express.static('client'));
 
-var sockets = []
-var test = false;
+const sockets = [];
+// const orb = {};
+let test = false;
 
-io.on('connection', function(socket) {
-    console.log('Someone connected!');
-    socket.id = Math.random();
-    socket.x = Math.floor(500 * Math.random());
-    socket.y = Math.floor(500 * Math.random());
-    socket.up = false;
-    socket.down = false;
-    socket.left = false;
-    socket.right = false;
-    socket.xVelocity = 0;
-    socket.yVelocity = 0;
+io.on('connection', (socket) => {
+  const s = socket;
+  // console.log('Someone connected!');
+  s.id = Math.random();
+  s.x = Math.floor(500 * Math.random());
+  s.y = Math.floor(500 * Math.random());
+  s.up = false;
+  s.down = false;
+  s.left = false;
+  s.right = false;
+  s.xVelocity = 0;
+  s.yVelocity = 0;
 
-    sockets.push(socket);
+  sockets.push(s);
 
-    socket.on('movement', function(data) {
-        var keydown = data[0];
-        var keycode = data[1];
-        console.log(keydown, keycode);
+  s.on('movement', (data) => {
+    const keydown = data[0];
+    const keycode = data[1];
+    // console.log(keydown, keycode);
 
-        if (keycode == 81) {
-            test = keydown;
-        }
+    if (keycode === 81) { // q
+      test = keydown;
+    }
 
-        if (keycode == 38 || keycode == 87) {
-            socket.up = keydown;
-        } else if (keycode == 40 || keycode == 83) {
-            socket.down = keydown;
-        } else if (keycode == 37 || keycode == 65) {
-            socket.left = keydown;
-        } else if (keycode == 39 || keycode == 68) {
-            socket.right = keydown;
-        }
+    if (keycode === 38 || keycode === 87) {
+      s.up = keydown;
+    } else if (keycode === 40 || keycode === 83) {
+      s.down = keydown;
+    } else if (keycode === 37 || keycode === 65) {
+      s.left = keydown;
+    } else if (keycode === 39 || keycode === 68) {
+      s.right = keydown;
+    }
 
-        if (socket.up && !socket.down) {
-            socket.yVelocity = -10;
-        } else if (!socket.up && socket.down) {
-            socket.yVelocity = 10;
-        } else {
-            socket.yVelocity = 0;
-        }
+    if (s.up && !s.down) {
+      s.yVelocity = -10;
+    } else if (!socket.up && socket.down) {
+      s.yVelocity = 10;
+    } else {
+      s.yVelocity = 0;
+    }
 
-        if (socket.right && !socket.left) {
-            socket.xVelocity = 10;
-        } else if (!socket.right && socket.left) {
-            socket.xVelocity = -10;
-        } else {
-            socket.xVelocity = 0;
-        }
-
-    });
+    if (s.right && !s.left) {
+      s.xVelocity = 10;
+    } else if (!socket.right && socket.left) {
+      s.xVelocity = -10;
+    } else {
+      s.xVelocity = 0;
+    }
+  });
 });
 
-setInterval(function() {
-    positions = []
-    for (var i = 0; i < sockets.length; i++) {
-        var s = sockets[i];
-        s.x += s.xVelocity;
-        s.y += s.yVelocity;
-        if (test) {
-            s.x += (Math.random() * 10) - 5;
-            s.y += (Math.random() * 10) - 5;
-        }
-
-        positions.push({
-            x: s.x,
-            y: s.y
-        });
+setInterval(() => {
+  const positions = [];
+  for (let i = 0; i < sockets.length; i += 1) {
+    const s = sockets[i];
+    s.x += s.xVelocity;
+    s.y += s.yVelocity;
+    if (test) {
+      s.x += (Math.random() * 10) - 5;
+      s.y += (Math.random() * 10) - 5;
     }
-    io.sockets.emit('all_movements', positions);
-}, 1000/30);
+
+    positions.push({
+      x: s.x,
+      y: s.y,
+    });
+  }
+  io.sockets.emit('all_movements', positions);
+}, 1000 / 30);
 
 server.listen(2000);
