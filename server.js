@@ -74,6 +74,7 @@ io.on('connection', (socket) => {
 
 setInterval(() => {
   const positions = [];
+  let touching = false;
   Object.keys(sockets).forEach((key) => {
     const s = sockets[key];
     s.x += s.xVelocity;
@@ -82,7 +83,9 @@ setInterval(() => {
       s.x += (Math.random() * 10) - 5;
       s.y += (Math.random() * 10) - 5;
     }
-
+    if (Math.sqrt((((s.x + 5) - orb.x) ** 2) + (((s.y + 5) - orb.y) ** 2)) < 15) {
+      touching = true;
+    }
     positions.push({
       x: s.x,
       y: s.y,
@@ -101,6 +104,11 @@ setInterval(() => {
   }
   if ((orb.y > 500 && orb.yVelocity > 0) || (orb.y < 0 && orb.yVelocity < 0)) {
     orb.yVelocity = -orb.yVelocity;
+  }
+  if (touching) {
+    io.sockets.emit('play');
+  } else {
+    io.sockets.emit('pause');
   }
   io.sockets.emit('all_movements', positions, orb);
 }, 1000 / 30);

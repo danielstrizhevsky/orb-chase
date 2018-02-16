@@ -1,4 +1,5 @@
 const socket = io();
+const audio = new Audio('test.mp3');
 
 const ctx = document.getElementById('mCanvas').getContext('2d');
 
@@ -8,7 +9,16 @@ document.onkeydown = (e) => {
 
 document.onkeyup = (e) => {
   socket.emit('movement', [false, e.keyCode]);
+  audio.pause();
 };
+
+socket.on('play', () => {
+  audio.play();
+});
+
+socket.on('pause', () => {
+  audio.pause();
+});
 
 socket.on('all_movements', (positions, orb) => {
   ctx.clearRect(0, 0, 500, 500);
