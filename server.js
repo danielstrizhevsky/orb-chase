@@ -10,8 +10,10 @@ app.get('/', (req, res) => {
 
 app.use(express.static('client'));
 
-const sockets = [];
-// const orb = {};
+const sockets = {};
+const orb = {
+  x: 250, y: 250, xVelocity: 0, yVelocity: 0,
+};
 let test = false;
 
 io.on('connection', (socket) => {
@@ -27,7 +29,11 @@ io.on('connection', (socket) => {
   s.xVelocity = 0;
   s.yVelocity = 0;
 
-  sockets.push(s);
+  sockets[s.id] = s;
+
+  s.on('disconnect', () => {
+    delete sockets[s.id];
+  });
 
   s.on('movement', (data) => {
     const keydown = data[0];
@@ -68,8 +74,8 @@ io.on('connection', (socket) => {
 
 setInterval(() => {
   const positions = [];
-  for (let i = 0; i < sockets.length; i += 1) {
-    const s = sockets[i];
+  Object.keys(sockets).forEach((key) => {
+    const s = sockets[key];
     s.x += s.xVelocity;
     s.y += s.yVelocity;
     if (test) {
@@ -81,8 +87,22 @@ setInterval(() => {
       x: s.x,
       y: s.y,
     });
+  });
+  if (Math.random() < 0.05) {
+    orb.xVelocity = (Math.random() * 10) - 5;
   }
-  io.sockets.emit('all_movements', positions);
+  if (Math.random() < 0.05) {
+    orb.yVelocity = (Math.random() * 10) - 5;
+  }
+  orb.x += orb.xVelocity;
+  orb.y += orb.yVelocity;
+  if ((orb.x > 500 && orb.xVelocity > 0) || (orb.x < 0 && orb.xVelocity < 0)) {
+    orb.xVelocity = -orb.xVelocity;
+  }
+  if ((orb.y > 500 && orb.yVelocity > 0) || (orb.y < 0 && orb.yVelocity < 0)) {
+    orb.yVelocity = -orb.yVelocity;
+  }
+  io.sockets.emit('all_movements', positions, orb);
 }, 1000 / 30);
 
 server.listen(2000);
