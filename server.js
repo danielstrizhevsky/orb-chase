@@ -44,7 +44,6 @@ io.on('connection', (socket) => {
       test = keydown;
     }
 
-
     if (keycode === 38 || keycode === 87) {
       s.up = keydown;
     } else if (keycode === 40 || keycode === 83) {
@@ -55,7 +54,7 @@ io.on('connection', (socket) => {
       s.right = keydown;
     }
 
-    if (s.up && !s.down ) {
+    if (s.up && !s.down) {
       s.yVelocity = -10;
     } else if (!s.up && s.down) {
       s.yVelocity = 10;
@@ -80,22 +79,18 @@ setInterval(() => {
     const s = sockets[key];
 
     if ((s.x + s.xVelocity) < 0) {
-        s.x = 0
+      s.x = 0;
+    } else if ((s.x + s.xVelocity) > 490) {
+      s.x = 490;
+    } else {
+      s.x += s.xVelocity;
     }
-    else if ((s.x + s.xVelocity) > 490) {
-        s.x = 490
-    }
-    else{
-        s.x += s.xVelocity;
-    }
-    if ((s.y+ s.yVelocity) < 0) {
-        s.y = 0
-    }
-    else if ((s.y + s.yVelocity) > 490) {
-        s.y = 490
-    }
-    else{
-        s.y += s.yVelocity;
+    if ((s.y + s.yVelocity) < 0) {
+      s.y = 0;
+    } else if ((s.y + s.yVelocity) > 490) {
+      s.y = 490;
+    } else {
+      s.y += s.yVelocity;
     }
 
     if (test) {
