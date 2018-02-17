@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
 
     if (s.up && !s.down ) {
       s.yVelocity = -10;
-    } else if (!socket.up && socket.down) {
+    } else if (!s.up && s.down) {
       s.yVelocity = 10;
     } else {
       s.yVelocity = 0;
@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
 
     if (s.right && !s.left) {
       s.xVelocity = 10;
-  } else if (!socket.right && socket.left) {
+    } else if (!s.right && s.left) {
       s.xVelocity = -10;
     } else {
       s.xVelocity = 0;
