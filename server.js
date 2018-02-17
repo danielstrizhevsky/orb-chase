@@ -77,8 +77,22 @@ setInterval(() => {
   let touching = false;
   Object.keys(sockets).forEach((key) => {
     const s = sockets[key];
-    s.x += s.xVelocity;
-    s.y += s.yVelocity;
+
+    if ((s.x + s.xVelocity) < 0) {
+      s.x = 0;
+    } else if ((s.x + s.xVelocity) > 490) {
+      s.x = 490;
+    } else {
+      s.x += s.xVelocity;
+    }
+    if ((s.y + s.yVelocity) < 0) {
+      s.y = 0;
+    } else if ((s.y + s.yVelocity) > 490) {
+      s.y = 490;
+    } else {
+      s.y += s.yVelocity;
+    }
+
     if (test) {
       s.x += (Math.random() * 10) - 5;
       s.y += (Math.random() * 10) - 5;
